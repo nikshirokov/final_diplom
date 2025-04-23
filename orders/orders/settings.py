@@ -152,3 +152,12 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
 }
+
+LANGUAGES = [
+    ('ru', 'Russian'),
+    ('en', 'English'),
+]
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]

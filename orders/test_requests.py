@@ -2,8 +2,8 @@ import requests
 # '''Регистрация'''
 # url = "http://localhost:8000/api/v1/user/register/"
 # data = {
-#     'username': "hLX0e@example2",
-#     "email": "hLX0e@example2.com",
+#     'username': "hLX0e@example3",
+#     "email": "hLX0e@example3.com",
 #     "password": "password",
 #     "first_name": "John",
 #     "last_name": "Doe",
@@ -16,18 +16,18 @@ import requests
 #
 # print("Статус код:", response.status_code)
 # print("Ответ сервера:", response.json())
-#
-# '''Вход'''
-# response = requests.post('http://localhost:8000/api/v1/user/login/', data={
-#     'username': 'hLX0e@example2',
-#     'password': 'password'
-# })
-# print("Статус код:", response.status_code)
-# print("Ответ сервера:", response.json())
-#
+
+'''Вход'''
+response = requests.post('http://localhost:8000/api/v1/user/login/', data={
+    'username': 'hLX0e@example3',
+    'password': 'password'
+})
+print("Статус код:", response.status_code)
+print("Ответ сервера:", response.json())
+
+access_token = response.json()['access']
+headers = {'Authorization': f'Bearer {access_token}'}
 # '''Просмотр профиля'''
-# access_token = response.json()['access']
-# headers = {'Authorization': f'Bearer {access_token}'}
 # url = 'http://localhost:8000/api/v1/user/profile/'
 # response = requests.get(url, headers=headers)
 # print("Информация о пользователе:", response.json())
@@ -42,7 +42,7 @@ import requests
 # item_data = {'product_info_id': 2, 'quantity': 1}  # ID существующего товара
 # response = requests.post(add_item_url, json=item_data, headers=headers)
 # print("Добавление товара:", response.json())
-#
+
 #
 # '''Проверка обновленной корзины'''
 # basket_url = 'http://localhost:8000/api/v1/basket/'

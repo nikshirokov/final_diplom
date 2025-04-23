@@ -7,20 +7,15 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        # Добавляем кастомные поля в токен
         token['user_type'] = user.user_type
         token['email'] = user.email
         return token
 
     def validate(self, attrs):
-        # Стандартная валидация и получение токенов
         data = super().validate(attrs)
+        refresh = data.pop('refresh', None)
+        access = data.pop('access', None)
 
-        # Добавляем дополнительные данные в ответ
-        refresh = data.pop('refresh', None)  # Убираем refresh из основного ответа
-        access = data.pop('access', None)  # Убираем access из основного ответа
-
-        # Формируем новый ответ
         response_data = {
             'access': access,
             'refresh': refresh,
@@ -35,15 +30,14 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'last_name': self.user.last_name
             }
         }
-
         return response_data
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
     user_type = serializers.ChoiceField(
-        choices=User.USER_TYPE_CHOICES,
-        default='buyer',
+        choices=User.UserType.choices,  # Исправлено здесь
+        default=User.UserType.BUYER,  # Исправлено здесь
         required=False
     )
 
@@ -52,7 +46,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         fields = (
             'username', 'first_name', 'last_name',
             'email', 'company', 'position',
-            'password', 'user_type'  # Добавили user_type
+            'password', 'user_type'
         )
         extra_kwargs = {
             'first_name': {'required': False, 'allow_blank': True},
@@ -62,12 +56,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        # Извлекаем пароль отдельно
         password = validated_data.pop('password')
-
-        # Создаем пользователя с хешированным паролем
         user = User.objects.create_user(
-            password=password,  # Пароль хешируется автоматически в create_user
+            password=password,
             **validated_data
         )
         return user
