@@ -36,8 +36,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
     user_type = serializers.ChoiceField(
-        choices=User.UserType.choices,  # Исправлено здесь
-        default=User.UserType.BUYER,  # Исправлено здесь
+        choices=User.UserType.choices,
+        default=User.UserType.BUYER,
         required=False
     )
 
@@ -73,12 +73,26 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class ContactSerializer(serializers.ModelSerializer):
+    """
+    Обрабатывает создание и обновление контактов с автоматической валидацией.
+    """
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Contact
-        fields = ('id', 'name', 'phone', 'email')
-        read_only_fields = ('id',)
+        fields = ['id', 'type', 'city', 'street', 'house', 'apartment',
+                 'postal_code', 'phone', 'value', 'user']
+        extra_kwargs = {
+            'value': {'read_only': True},
+            'phone': {'required': False}  # Делаем необязательным, валидацию добавим вручную
+        }
 
-
+    def validate(self, data):
+        if data.get('type') == 'phone' and not data.get('phone'):
+            raise serializers.ValidationError(
+                {"phone": "Для типа 'phone' необходимо указать номер телефона"}
+            )
+        return data
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
@@ -152,11 +166,14 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
         return data
 
+
 class OrderSerializer(serializers.ModelSerializer):
     ordered_items = OrderItemSerializer(many=True, read_only=True)
-    total_sum = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    total_sum = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = ['id', 'status', 'dt', 'ordered_items', 'total_sum']
-        read_only_fields = fields
+        fields = ['id', 'status', 'dt', 'contact', 'ordered_items', 'total_sum']
+
+    def get_total_sum(self, obj):
+        return obj.total_sum

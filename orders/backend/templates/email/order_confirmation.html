@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Подтверждение заказа №{{ order.id }}</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h2>Ваш заказ №{{ order.id }} подтвержден</h2>
+    <p>Уважаемый(ая) {{ user.first_name }} {{ user.last_name }},</p>
+    <p>Благодарим вас за заказ в нашем интернет-магазине!</p>
+
+    <h3>Детали заказа:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Магазин</th>
+                <th>Количество</th>
+                <th>Цена</th>
+                <th>Сумма</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+            <tr>
+                <td>{{ item.product_info.product.name }}</td>
+                <td>{{ item.product_info.shop.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.product_info.price }} руб.</td>
+                <td>{{ item.total_price }} руб.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><strong>Общая сумма заказа: {{ order.total_sum }} руб.</strong></p>
+
+    <p>Вы можете отслеживать статус вашего заказа по ссылке:
+    <a href="{{ order_link }}">Мой заказ</a></p>
+
+    <p>С уважением,<br>Команда магазина</p>
+</body>
+</html>

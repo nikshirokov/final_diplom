@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'backend',
     'rest_framework',
     'rest_framework_simplejwt',
+
 ]
 
 MIDDLEWARE = [
@@ -60,7 +61,7 @@ ROOT_URLCONF = 'orders.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Для email
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -161,3 +162,19 @@ LANGUAGES = [
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
 ]
+
+# Настройка электронной почты
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.consol.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))  # Используем порт для TLS
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'  # Используем TLS для безопасной передачи
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')  # Логин вашей почты
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')  # Специальный ключ для приложения
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'admin@example.com')
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'admin@example.com')
+
+# URL фронтенда для ссылок в письмах
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://127.0.0.1:8000')
+
+# Настройки для фронтенда
+FRONTEND_URL = 'http://localhost:8000/api/v1'
